@@ -253,7 +253,7 @@ var commands = {
 	status: function(msg, object, callback){
 		var chat = object.chat.id;
 		new Room(chat, object.from, function(game){
-			if(game.game.paused){
+			if(game.setting('started', false) == false)
 				callback("The game is on hold. Run the command /start to compete for all the cookies in the world!");
 			} else {
 				callback("The game is up and running. Type and eat all the cookies you can!! Do you need a break? Type /stop or /pause");
