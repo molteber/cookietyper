@@ -264,7 +264,12 @@ function Room(chatid, player, cb){
 	};
 
 	self.loadItems = function(cb){
-		collection.Item.find({ _id: { $in: self.game.items} }, function(err, docs){
+		var items = [];
+		for(var i = 0; i < self.game.items.length; i++) {
+			items.push(self.game.items[i].item);
+		}
+
+		collection.Item.find({ _id: { $in: items} }, function(err, docs){
 			self.items = docs;
 			cb();
 		});
