@@ -178,7 +178,7 @@ function Room(chatid, player, cb){
 
 			return true;
 		} else if (item >= 0 && item !== null && self.commands[command] && self.commands[command] instanceof Function) {
-			console.log("command found", command);)
+			console.log("command found", command)
 			self.commands[command](item, msg, object, callback);
 
 			return true;
