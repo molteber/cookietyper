@@ -1,0 +1,253 @@
+var Bot = require("./telebot"),
+	collections = require('./files/collections'),
+	Room = require('./files/game');
+
+
+
+
+bot = new Bot("CookieTyperBetaBot", "106390704:AAHpEbbJgu32FDSnNIQttBF5iKtUzurQm2k");
+
+var options = {
+	limit: 1,
+	timeout: 60000,
+	offset: 0
+};
+
+var gameitems = {
+	max: 10,
+	min: 10,
+	curr: null,
+	get: function(cb){
+		if(this.curr == null) this.curr = this.max;
+
+		var rand = this.rand(this.curr);
+		if(rand == this.curr){
+			// Find an item and add to game
+			collections.Item.findOne({random: { $near : [Math.random(), 0] } }, function(err, doc){
+				if(err || !doc){
+					if(!doc) err = "Ingen items";
+
+					console.log("ERR!! %s", err);
+					cb();
+				} else {
+					this.curr = this.max;
+					cb(doc);
+				}
+			});
+		} else {
+			if(this.curr > this.min) this.curr--;
+			cb();
+		}
+
+	},
+	rand: function(max){
+		return Math.floor(Math.random()*max)+1;
+	}
+}
+/*
+collections.Item.create({
+	name: "Golden cookie",
+	command: "goldencookie"
+});
+collections.Item.create({
+	name: "Ninja cookie",
+	command: "ninja"
+});*/
+var getUpdates = bot.request.bind(bot, "updates", options);
+
+var getupdatesCallback = function(err, res){
+	if(!err){
+		if(typeof res == "object" && res.result && res.result.length > 0 && res.result[0].update_id){
+			options.offset = res.result[0].update_id+1;
+
+			var text = res.result[0].message.text;
+			var object = res.result[0].message;
+			console.log("Message: %s", text);
+			console.log(res.result[0].message);
+			if(text){
+				var words = text.split(" ");
+				// Is it a command
+				if(words[0].indexOf('/') === 0){
+					var command = words[0].split("@"+bot.getName())[0].substr(1);
+					words.splice(0,1);
+					words = words.join(' ');
+
+					new Room(object.chat.id, object.from, function(game){
+						console.log(game, "created");
+						if(!game.game.paused && !game.doCommand(command, words, object, function(msg){
+							console.log("Bot: %s", msg);
+							bot.request("msg", {
+								chat_id: object.chat.id,
+								text: msg
+							});
+						})){
+							if(!commands[command]){
+								if(aliases[command] && commands[aliases[command]]){
+									command = aliases[command];
+								}
+							}
+							if(commands[command]){
+								console.log("Info: Triggering command [%s]", command);
+								commands[command](words, res.result[0].message, function(msg){
+									console.log("Bot: %s", msg);
+									bot.request("msg", {
+										chat_id: res.result[0].message.chat.id,
+										text: msg
+									});
+								});
+							}
+						}
+					});
+				} else {
+					// When not writing a command, we accept their offer of cookie points
+					new Room(object.chat.id, object.from, function(game){
+						// Check if player has boost
+
+						if(game.setting('started', false) == true) {
+							var player = game.player;
+							var cookie = 1;
+
+							var date = new Date();
+							var sec = Math.round(date.getTime()/1000);
+
+							// Loop effects
+							var effect;
+							for(var i = 0; i < player.effects.length; i++){
+								effect = player.effects[i];
+								if(effect.expire < sec) {
+									player.effects.splice(i, 1)
+								} else {
+									cookie *= effect.bonus;
+								}
+							}
+
+							game.player.stats.cookies += cookie;
+							game.game.markModified('players');
+							game.game.save(function(err, save){
+
+								// Check if we should add a item to the game
+								gameitems.get(function(doc){
+									if(doc){
+										game.game.items.push(doc);
+										game.game.markModified('items');
+										game.game.save(function(err, saved){
+											var msg = "A very special cookie fell down from heaven. Eat it by typing the command  '"+doc.command+"'";
+											console.log("Bot: %s", msg);
+											bot.request("msg", {
+												chat_id: object.chat.id,
+												text: msg
+											});
+										});
+									}
+								});
+							});
+						}
+					});
+				}
+			} else {
+				console.log("Info: Empty/missing text");
+			}
+		}
+		else{
+			if(typeof res == "object"){
+				console.log("Info: No new messages");
+			}
+			else{
+				console.log("Info: "+res);
+			}
+		}
+	}
+	else{
+		console.log("Error: ", err);
+	}
+	getUpdates(getupdatesCallback);
+}
+
+getupdatesCallback(null, "Booting script");
+
+function getObject(starter, str, obj){
+	starter = starter || global;
+	var obj = obj.split(".");
+	var data = starter;
+	for(i = 0; i < obj.length; i++){
+		if(data[obj[i]]){
+			data = data[obj[i]];
+		} else return false;
+	}
+	return data;
+}
+
+
+var commands = {
+	start: function(msg, object, callback){
+		// Start a game again or create a new one for this chat
+		var chat = object.chat.id;
+		new Room(chat, object.from, function(game){
+			game.startGame(function(changed){
+				if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
+			});
+		});
+	},
+	stop: function(msg, object, callback){
+		// Pauses a game
+		var chat = object.chat.id;
+		new Room(chat, object.from, function(game){
+			game.stopGame(function(changed){
+				if(changed) callback("The game is put on hold. No cookies for you :'(");
+			});
+		});
+	},
+	score: function(msg, object, callback){
+		var chat = object.chat.id;
+		new Room(chat, object.from, function(game){
+			game.getScore(msg, function(msg){
+				callback(msg);
+			});
+		})
+	},
+	cookies: function(msg, object, callback){
+		var chat = object.chat.id;
+		new Room(chat, object.from, function(game){
+			var items = game.game.items;
+
+			if(items.length > 0){
+				var diff = {};
+				for(var i = 0; i < items.length; i++){
+					if(diff[items[i].command]){
+						diff[items[i].command].total++;
+					} else {
+						diff[items[i].command] = {
+							total : 1,
+							name: items[i].name,
+						}
+					}
+				}
+				var split ="\n---------------";
+				var melding = "These cookies is just waiting to get eaten!"+split;
+				for(a in diff){
+					melding += "\n"+diff[a].name;
+					if(diff[a].total > 1) melding += " (x"+diff[a].total+")";
+					melding += " - "+a;
+				}
+				melding += split+"\nWrite the command which is written in the end to eat the cookie";
+				callback(melding);
+			} else {
+				callback("What? No cookies?? Cookie monster sad :'(");
+			}
+		})
+	},
+	status: function(msg, object, callback){
+		var chat = object.chat.id;
+		new Room(chat, object.from, function(game){
+			if(game.game.paused){
+				callback("The game is on hold. Run the command /start to compete for all the cookies in the world!");
+			} else {
+				callback("The game is up and running. Type and eat all the cookies you can!! Do you need a break? Type /stop or /pause");
+			}
+		});
+	}
+};
+var aliases = {
+	pause: "stop",
+	play: "start"
+};
