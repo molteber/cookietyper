@@ -32,6 +32,9 @@ var ItemSchema = new mongoose.Schema({
 	command: {type: String, unique: true, required: true},
 	random: {type: [Number], index: '2d'},
 	chance: {type: Number, min: 0, max: 100, default: 100},
+	dropmessage: String,
+	eatmessage: String,
+	expires: {type: Number, min: 0, default: 0},
 	additional: mongoose.Schema.Types.Mixed
 });
 
