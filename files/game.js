@@ -185,6 +185,7 @@ function Room(chatid, player, cb){
 
 	self.hasItem = function(command){
 		for (var i = 0; i < self.items.length; i++) {
+			console.log(self.items[i].command, command);
 			if (self.items[i].command === command) {
 				return i;
 			}
