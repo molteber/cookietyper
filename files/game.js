@@ -199,7 +199,7 @@ function Room(chatid, player, cb){
 				return i;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -232,7 +232,7 @@ function Room(chatid, player, cb){
 			cb = function(){};
 		}
 
-		if(self.setting('started', false) == false) cb(false);
+		if(self.setting('started', true) == false) cb(false);
 		else {
 			self.setSetting('started', false);
 			self.game.save(function(){
