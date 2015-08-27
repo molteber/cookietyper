@@ -128,10 +128,25 @@ var getupdatesCallback = function(err, res){
 								// Check if we should add a item to the game
 								gameitems.get(function(doc){
 									if(doc){
-										game.game.items.push(doc);
+										var item = {
+											item: doc._id,
+											expires: null
+										};
+										if(doc.expires > 0) {
+											var date = new Date();
+											date.setSeconds(date.getSeconds()+doc.expires);
+											item.expires = Math.floor(date.getTime()/1000);
+										}
+
+										game.game.items.push(item);
 										game.game.markModified('items');
 										game.game.save(function(err, saved){
-											var msg = "A very special cookie fell down from heaven. Eat it by typing the command  '"+doc.command+"'";
+											var msg;
+											if(doc.dropmessage && doc.dropmessage.length > 0) {
+												msg = doc.dropmessage.replace('%command%', doc.command);
+											} else {
+												msg = "A very special cookie fell down from heaven. Eat it by typing the command  '"+doc.command+"'";
+											}
 											console.log("Bot: %s", msg);
 											bot.request("msg", {
 												chat_id: object.chat.id,

@@ -30,7 +30,7 @@ var items = [
 		command: '5secondrule',
 		chance: 75,
 		dropmessage: 'NO! I dropped some cookies on the floor. Quick! Pick them up before the germs get them! (%command%)',
-		eatmessage: "%username% cleaned the cookie and ate it. While inside the mouth, the cookie splits into %cookies% new cookies.",
+		eatmessage: "%username% cleaned a cookie and ate it. While inside the mouth, the cookie splits into %cookies% new cookies.",
 		expires: 5
 	},
 	{

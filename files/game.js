@@ -20,23 +20,13 @@ function Room(chatid, player, cb){
 			self.game.markModified('items');
 			self.game.save(function(){
 
-				var rand = Math.floor(Math.random()*3)+1;
-				var date = Date.now() / 1000 | 0;
+				var rand = Math.floor(Math.random()*2)+1;
 
 				var date = new Date();
 				var sec;
 
-				var rand = 2;
 				switch(rand){
 					case 1:
-						var bonus = 100+Math.floor(Math.pow(self.game.players.length*self.player.stats.goldencookie, self.player.stats.goldencookie));
-						self.player.cookies += bonus;
-						self.game.markModified('players');
-						self.game.save();
-
-						callback("@"+self.player.username+" fikk "+bonus +" nye cookies fra sin gylne kjeks");
-						break;
-					case 2:
 						date.setSeconds(date.getSeconds()+77);
 						sec = Math.round(date.getTime()/1000);
 
@@ -47,12 +37,13 @@ function Room(chatid, player, cb){
 						};
 
 						self.player.effects.push(effect);
+						self.game.markmodified('players');
 
-						self.game.save();
-
-						callback("@"+self.player.username+" får nå x7 cookies i 77 sekunder fra sin gylne kjeks");
+						self.game.save(function(){
+							callback("The golden cookie now grants "+self.player.username+" cookies x7 for 77 seconds!");
+						});
 						break;
-					case 3:
+					case 2:
 						date.setSeconds(date.getSeconds()+7);
 						sec = Math.round(date.getTime()/1000);
 
@@ -63,8 +54,10 @@ function Room(chatid, player, cb){
 						};
 
 						self.player.effects.push(effect);
+						self.game.markmodified('players');
+
 						self.game.save(function(){
-							callback("@"+self.player.username+" får nå x77 cookies i 7 sekunder fra sin gylne kjeks");
+							callback("The golden cookie now grants "+self.player.username+" cookies x77 for 7 seconds!");
 						});
 						break;
 				}
@@ -76,25 +69,39 @@ function Room(chatid, player, cb){
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
 			self.game.save(function(){
-				self.player.cookies += 1337;
+
+				var cookies = 1337;
+				// Look for bonus effects on your user
+
+				self.player.cookies += (cookies*self.getBonusEffects());
 				self.game.markModified('players');
 				self.game.save();
 
+				var msg = item.eatmessage.replace('%username%', self.player.username).replace('%cookies%', cookies);
+				callback(msg);
 				callback("@"+object.from.username+" fikk "+item.bonus +" nye cookies fra sin L33T cookie");
 			});
 		},
 		ninja: function(itemId, msg, object, callback) {
 			var item = self.items[itemId];
 
+			var rand = Math.floor(Math.random()*3)+1;
+
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
 
-			self.game.save(function() {
-				self.player.items.push(item._id);
+			self.game.save(function(){
+				for(var i = 0; i < rand; i++) {
+					self.player.items.push({
+						command: item.command
+					});
+				}
 				self.game.markModified('players');
-				self.game.save();
+				self.game.save(function(){
 
-				callback("@"+self.player.username+" found some cookie stars laying on the ground. Use /throwcookie <username> to throw it on someone!\n[This item stacks]");
+					var msg = item.eatmessage.replace('%username%', self.player.username).replace('%amount%', items);
+					callback(msg);
+				});
 			});
 		},
 		throwcookie: function(itemId, msg, object, callback){
@@ -138,6 +145,23 @@ function Room(chatid, player, cb){
 		}
 	};
 
+	self.getBonusEffects = function()
+	{
+		var date = new Date();
+		var sec = Math.round(date.getTime()/1000);
+
+		var bonus = 1;
+		for (var i = 0; i < self.player.effects; i++) {
+			if(sec < self.player.effects[i].expire) {
+				bonus *= self.player.effects[i].bonus;
+			} else {
+				self.player.effects.splice(i, 1);
+				self.game.markModified('players');
+			}
+		}
+		return bonus;
+	};
+
 	self.doCommand = function(command, msg, object, callback){
 		if(self.player == null) {
 			callback("Don't try to steal this cookie when you don't have a username!");
@@ -146,8 +170,14 @@ function Room(chatid, player, cb){
 
 		// Load all items!
 		var item = self.hasItem(command);
-		if (item >= 0 && item !== null && self.commands[command] && self.commands[command] instanceof Function) {
+		var playeritem = self.hasSelfItem(command);
+		if(playeritem >= 0 && playeritem !== null && self.commands[command] && self.commands[command] instanceof Function) {
+			self.commands[command](playeritem, msg, object, callback);
+
+			return true;
+		} else if (item >= 0 && item !== null && self.commands[command] && self.commands[command] instanceof Function) {
 			self.commands[command](item, msg, object, callback);
+
 			return true;
 		}
 		return false;
@@ -161,6 +191,17 @@ function Room(chatid, player, cb){
 		}
 		return null;
 	};
+
+	self.hasSelfItem = function(command)
+	{
+		for (var i = 0; i < self.player.items.length; i++) {
+			if(self.player.items[i].command === command) {
+				return i;
+			}
+		}
+		
+		return null;
+	}
 
 	self.setting = function(key, def){
 		if(key in self.settings) return self.settings[key];

@@ -7,7 +7,12 @@ var RoomSchema = new mongoose.Schema({
 			id: {type: String, unique: true, dropDubs: true, required: true},
 			username: {type: String, required: true},
 			stats: mongoose.Schema.Types.Mixed,
-			items: [mongoose.Schema.Types.ObjectId],
+			items: [
+				{
+					command: String,
+					expore: {type: Number, default: 0, min:0}
+				}
+			],
 			effects: [{
 				item: mongoose.Schema.Types.ObjectId,
 				bonus: Number,
