@@ -223,6 +223,8 @@ var commands = {
 		var chat = object.chat.id;
 		new Room(chat, object.from, function(game){
 			var items = game.items;
+			console.log(game.items);
+			console.log(game.game.items);
 
 			if(items.length > 0){
 				var diff = {};
