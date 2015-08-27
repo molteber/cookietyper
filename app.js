@@ -73,7 +73,6 @@ var getupdatesCallback = function(err, res){
 					words = words.join(' ');
 
 					new Room(object.chat.id, object.from, function(game){
-						console.log(game, "created");
 						if(!game.game.paused && !game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
 							bot.request("msg", {
