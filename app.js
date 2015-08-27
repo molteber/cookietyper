@@ -222,7 +222,7 @@ var commands = {
 	cookies: function(msg, object, callback){
 		var chat = object.chat.id;
 		new Room(chat, object.from, function(game){
-			var items = game.game.items;
+			var items = game.items;
 
 			if(items.length > 0){
 				var diff = {};
@@ -238,6 +238,7 @@ var commands = {
 				}
 				var split ="\n---------------";
 				var melding = "These cookies is just waiting to get eaten!"+split;
+
 				for(a in diff){
 					melding += "\n"+diff[a].name;
 					if(diff[a].total > 1) melding += " (x"+diff[a].total+")";
