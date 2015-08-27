@@ -10,7 +10,7 @@ var items = [
 		expires: 0
 	},
 	{
-		name: "1337",
+		name: "1337 cookie",
 		command: "l33t",
 		chance: 90,
 		dropmessage: 'Shh! My LEET my senses are tingling. Quick, eat this cookie! (%command%)',
@@ -26,7 +26,7 @@ var items = [
 		expires: (60*5)
 	},
 	{
-		name: "5 second rule",
+		name: "Dirty cookie",
 		command: '5secondrule',
 		chance: 75,
 		dropmessage: 'NO! I dropped some cookies on the floor. Quick! Pick them up before the germs get them! (%command%)',
@@ -34,7 +34,7 @@ var items = [
 		expires: 5
 	},
 	{
-		name: "Attack the leader!",
+		name: "Blue shiny object",
 		command: 'bluebeast',
 		chance: 20,
 		dropmessage: 'What is that blue shiny thing behind your ear? (%command%)',
