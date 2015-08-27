@@ -231,7 +231,7 @@ function Room(chatid, player, cb){
 		if(!(cb instanceof Function)){
 			cb = function(){};
 		}
-		console.log("STATUS: ", self.setting('started'), self.settings);
+		console.log("STATUS: ", self.setting('started', true), self.settings);
 		if(self.setting('started', true) == false) cb(false);
 		else {
 			self.setSetting('started', false);
