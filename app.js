@@ -67,13 +67,14 @@ var getupdatesCallback = function(err, res){
 			if(text){
 				var words = text.split(" ");
 				// Is it a command
-				if(words[0].indexOf('/') === 0){
-					var command = words[0].split("@"+bot.getName())[0].substr(1);
-					words.splice(0,1);
-					words = words.join(' ');
+				new Room(object.chat.id, object.from, function(game) {
+					// Check if the message is a command
+					if (workds[0].indexOf('/') === 0) {
+						var command = words[0].split("@"+bot.getName())[0].substr(1);
+						words.splice(0,1);
+						words = words.join(' ');
 
-					new Room(object.chat.id, object.from, function(game){
-						if(!game.game.paused && !game.doCommand(command, words, object, function(msg){
+						if(game.setting('started', false) && !game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
 							bot.request("msg", {
 								chat_id: object.chat.id,
@@ -96,12 +97,7 @@ var getupdatesCallback = function(err, res){
 								});
 							}
 						}
-					});
-				} else {
-					// When not writing a command, we accept their offer of cookie points
-					new Room(object.chat.id, object.from, function(game){
-						// Check if player has boost
-
+					} else {
 						if(game.setting('started', false) == true) {
 							var player = game.player;
 							var cookie = 1;
@@ -156,8 +152,8 @@ var getupdatesCallback = function(err, res){
 								});
 							});
 						}
-					});
-				}
+					}
+				});
 			} else {
 				console.log("Info: Empty/missing text");
 			}

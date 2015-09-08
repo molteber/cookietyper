@@ -280,14 +280,27 @@ function Room(chatid, player, cb){
 	};
 
 	self.loadItems = function(cb){
+		var date = new Date();
+		var seconds = Math.round(date.getTime()/1000);
 		var items = [];
+		var expire;
 		for(var i = 0; i < self.game.items.length; i++) {
+			if (self.game.items[i].expire > 0) {
+				expire = selg.game.items[i].expire;
+				if (expire < seconds) {
+					self.game.items.splice(i, 1);
+					selg.game.markModified('items');
+				}
+
+			}
 			items.push(self.game.items[i].item);
 		}
 
 		collection.Item.find({ _id: { $in: items} }, function(err, docs){
 			self.items = docs;
-			cb();
+			self.game.save(function(){
+				cb();
+			});
 		});
 	};
 
