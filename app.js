@@ -122,10 +122,11 @@ var getupdatesCallback = function(err, res){
 
 								// Check if we should add a item to the game
 								gameitems.get(function(doc){
+									console.log(doc, "COOKIE DROPPED")
 									if(doc){
 										var item = {
 											item: doc._id,
-											expires: null
+											expires: 0
 										};
 										if(doc.expires > 0) {
 											var date = new Date();

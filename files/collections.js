@@ -10,7 +10,7 @@ var RoomSchema = new mongoose.Schema({
 			items: [
 				{
 					command: String,
-					expire: {type: Number, default: 0, min:0}
+					expires: {type: Number, default: 0, min:0}
 				}
 			],
 			effects: [{
