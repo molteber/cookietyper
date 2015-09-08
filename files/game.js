@@ -16,10 +16,9 @@ function Room(chatid, player, cb){
 		goldencookie: function(itemId, msg, object, callback){
 			var item = self.items[itemId];
 
-			self.game.items.splice(itemId, 1);
-			self.game.markModified('items');
-			self.game.save(function(){
-
+			// self.game.items.splice(itemId, 1);
+			// self.game.markModified('items');
+			self.game.save(function(err, doc){
 				var rand = Math.floor(Math.random()*2)+1;
 
 				var date = new Date();
@@ -37,7 +36,7 @@ function Room(chatid, player, cb){
 						};
 
 						self.player.effects.push(effect);
-						self.game.markmodified('players');
+						self.game.markModified('players');
 
 						self.game.save(function(){
 							callback("The golden cookie now grants "+self.player.username+" cookies x7 for 77 seconds!");
@@ -54,7 +53,7 @@ function Room(chatid, player, cb){
 						};
 
 						self.player.effects.push(effect);
-						self.game.markmodified('players');
+						self.game.markModified('players');
 
 						self.game.save(function(){
 							callback("The golden cookie now grants "+self.player.username+" cookies x77 for 7 seconds!");
@@ -64,22 +63,29 @@ function Room(chatid, player, cb){
 			});
 		},
 		l33t: function(itemId, msg, object, callback){
-			var item = self.game.items[itemId];
+			var gameitem = self.game.items[itemId];
+			var item = self.getItem(gameitem.item);
+			console.log("1.0", item);
 
-			self.game.items.splice(itemId, 1);
-			self.game.markModified('items');
+			// self.game.items.splice(itemId, 1);
+			// self.game.markModified('items');
 			self.game.save(function(){
 
 				var cookies = 1337;
 				// Look for bonus effects on your user
 
 				self.player.cookies += (cookies*self.getBonusEffects());
+				console.log("1.1");
+				console.log("1.2");
 				self.game.markModified('players');
-				self.game.save();
-
-				var msg = item.eatmessage.replace('%username%', self.player.username).replace('%cookies%', cookies);
-				callback(msg);
-				callback("@"+object.from.username+" fikk "+item.bonus +" nye cookies fra sin L33T cookie");
+				console.log("1.1");
+				self.game.save(function() {
+					console.log("leet finished");
+					console.log(msg, item);
+					var msg = item.eatmessage.replace('%username%', self.player.username).replace('%cookies%', cookies);
+					callback(msg);
+				});
+				//callback("@"+object.from.username+" fikk "+item.bonus +" nye cookies fra sin L33T cookie");
 			});
 		},
 		ninja: function(itemId, msg, object, callback) {
@@ -93,7 +99,7 @@ function Room(chatid, player, cb){
 			self.game.save(function(){
 				for(var i = 0; i < rand; i++) {
 					self.player.items.push({
-						command: item.command
+						command: 'throwcookie'
 					});
 				}
 				self.game.markModified('players');
@@ -247,23 +253,29 @@ function Room(chatid, player, cb){
 	self.getScore = function(username, cb){
 		var cookies = 0;
 		var split ="\n---------------";
-		var melding = "Scoren er som følger:"+split;
+		var melding = "Highscore:"+split;
 
 		if(username){
 			if(username.indexOf('@') >= 0){
 				username = username.substr(username.indexOf('@')+1);
 			}
 			for(var i = 0; i < self.game.players.length; i++){
-				if(username == self.game.players[i].player){
-					return cb("@"+self.game.players[i].player+" har "+self.game.players[i].cookies+" cookies!");
+				if(username == self.game.players[i].username){
+					if (!('cookies' in self.game.players[i].stats)) {
+						self.game.players[i].stats.cookies = 0;
+					}
+					return cb("@"+self.game.players[i].username+" has "+self.game.players[i].stats.cookies+" cookies!");
 				}
 			}
 		}
 		for(var i = 0; i < self.game.players.length; i++){
-			melding += "\n@"+self.game.players[i].player+" har "+self.game.players[i].cookies;
-			cookies += self.game.players[i].cookies;
+			if (!('cookies' in self.game.players[i].stats)) {
+				self.game.players[i].stats.cookies = 0;
+			}
+			melding += "\n@"+self.game.players[i].username+" har "+self.game.players[i].stats.cookies;
+			cookies += 	self.game.players[i].stats.cookies;
 		}
-		melding += split+"\nTotalt har dere en score på "+cookies+" cookie!";
+		melding += split+"\nTotal you all got a score of "+cookies+" cookies!";
 		return cb(melding);
 	};
 
@@ -277,6 +289,16 @@ function Room(chatid, player, cb){
 			self.items = docs;
 			cb();
 		});
+	};
+
+	self.getItem = function(id)
+	{
+		for (var i = 0; i < self.items.length; i++) {
+			if((self.items[i]._id+"") == (id+"")) {
+				return self.items[i];
+			}
+		}
+		return null;
 	};
 
 	// Look for gameroom
