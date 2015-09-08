@@ -69,7 +69,9 @@ var getupdatesCallback = function(err, res){
 				// Is it a command
 				new Room(object.chat.id, object.from, function(game) {
 					// Check if the message is a command
+					console.log("has started: %s", game.setting('started', false));
 					if (words[0].indexOf('/') === 0) {
+						console.log("command");
 						var command = words[0].split("@"+bot.getName())[0].substr(1);
 						words.splice(0,1);
 						words = words.join(' ');
@@ -98,6 +100,7 @@ var getupdatesCallback = function(err, res){
 							}
 						}
 					} else {
+
 						if(game.setting('started', false) == true) {
 							var player = game.player;
 							var cookie = 1;
