@@ -69,6 +69,7 @@ var getupdatesCallback = function(err, res){
 				// Is it a command
 				new Room(object.chat.id, object.from, function(game) {
 					// Check if the message is a command
+					console.log("test");
 					if (workds[0].indexOf('/') === 0) {
 						var command = words[0].split("@"+bot.getName())[0].substr(1);
 						words.splice(0,1);
