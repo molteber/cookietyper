@@ -272,7 +272,7 @@ function Room(chatid, player, cb){
 			if (!('cookies' in self.game.players[i].stats)) {
 				self.game.players[i].stats.cookies = 0;
 			}
-			melding += "\n@"+self.game.players[i].username+" har "+self.game.players[i].stats.cookies;
+			melding += "\n@"+self.game.players[i].username+" has "+self.game.players[i].stats.cookies;
 			cookies += 	self.game.players[i].stats.cookies;
 		}
 		melding += split+"\nTotal you all got a score of "+cookies+" cookies!";
