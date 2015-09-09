@@ -137,6 +137,7 @@ var getupdatesCallback = function(err, res){
 											date.setSeconds(date.getSeconds()+doc.expires);
 											item.expires = Math.floor(date.getTime()/1000);
 										}
+										console.log("new item: ", item);
 
 										game.game.items.push(item);
 										game.game.markModified('items');
