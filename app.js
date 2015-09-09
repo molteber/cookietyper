@@ -75,8 +75,8 @@ var getupdatesCallback = function(err, res){
 						words.splice(0,1);
 						words = words.join(' ');
 						console.log("command: %s, %s", command, words);
-
-						if(game.setting('started', false) && !game.doCommand(command, words, object, function(msg){
+						// game.setting('started', false) && 
+						if(!game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
 							bot.request("msg", {
 								chat_id: object.chat.id,
