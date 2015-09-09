@@ -120,7 +120,13 @@ function Room(chatid, player, cb){
 			});
 		},
 		throwcookie: function(itemId, msg, object, callback){
-			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg+", but failed");
+			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg+", but failed\n[THIS COOKIE IS NOT READY YET :/]");
+		},
+		bluebeast: function(itemId, msg, object, callback){
+			callback("[THIS COOKIE IS NOT READY YET :/]");
+		},
+		'5secondrule' : function(itemId, msg, object, callback) {
+			callback("[THIS COOKIE IS NOT READY YET :/]");
 		}
 	};
 	/** Define methods **/
@@ -289,7 +295,7 @@ function Room(chatid, player, cb){
 			melding += "\n@"+self.game.players[i].username+" has "+self.game.players[i].stats.cookies;
 			cookies += 	self.game.players[i].stats.cookies;
 		}
-		melding += split+"\nTotal you all got a score of "+cookies+" cookies!";
+		melding += split+"\nYou have a total group score of "+cookies+" cookies!";
 		return cb(melding);
 	};
 
