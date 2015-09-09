@@ -246,6 +246,7 @@ function Room(chatid, player, cb){
 		if(self.setting('started', false) == true) cb(false);
 		else {
 			self.setSetting('started', true);
+			self.markModified('settings');
 			self.game.save(function(){
 				cb(true);
 			});
