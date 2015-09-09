@@ -200,11 +200,11 @@ function Room(chatid, player, cb){
 		var playeritem = self.hasSelfItem(command);
 		console.log("item command: ", item);
 		console.log("player command: ", playeritem);
-		if(playeritem >= 0 && playeritem !== null && self.commands[command] && self.commands[command] instanceof Function) {
+		if(playeritem >= 0 && playeritem !== null && (command in self.commands) && self.commands[command] instanceof Function) {
 			self.commands[command](playeritem, msg, object, callback);
 
 			return true;
-		} else if (item >= 0 && item !== null && self.commands[command] && self.commands[command] instanceof Function) {
+		} else if (item >= 0 && item !== null && (command in self.commands) && self.commands[command] instanceof Function) {
 			// console.log("command found", command)
 			self.commands[command](item, msg, object, callback);
 
