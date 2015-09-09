@@ -16,18 +16,19 @@ var RoomSchema = new mongoose.Schema({
 			effects: [{
 				item: mongoose.Schema.Types.ObjectId,
 				bonus: Number,
-				expire: Date
+				expires: {type: Number, default: 0, min:0}
 			}]
 		}
 	],
 	items: [{
 		item: mongoose.Schema.Types.ObjectId,
-		expires: Date
+		expires: {type: Number, default: 0, min:0}
 	}],
 	settings: mongoose.Schema.Types.Mixed,
 	effects: [{
 		item: mongoose.Schema.Types.ObjectId,
-		expire: Date
+		bonus: Number,
+		expires: {type: Number, default: 0, min:0}
 	}],
 	created: {type: Date, default: Date.now }
 });

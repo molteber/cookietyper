@@ -16,13 +16,17 @@ function Room(chatid, player, cb){
 		goldencookie: function(itemId, msg, object, callback){
 			var item = self.items[itemId];
 
-			// self.game.items.splice(itemId, 1);
-			// self.game.markModified('items');
+			self.game.items.splice(itemId, 1);
+			self.game.markModified('items');
 			self.game.save(function(err, doc){
 				var rand = Math.floor(Math.random()*2)+1;
 
 				var date = new Date();
 				var sec;
+
+				if (!('goldencookies' in self.player.stats)) self.player.stats.goldencookies = 0;
+				self.player.stats.goldencookies++;
+
 
 				switch(rand){
 					case 1:
@@ -71,17 +75,18 @@ function Room(chatid, player, cb){
 			self.game.markModified('items');
 			self.game.save(function(){
 
-				var cookies = 1337;
-				// Look for bonus effects on your user
+				// Update stats
+				if (!('leetcookies' in self.player.stats)) self.player.stats.leetcookies = 0;
+				self.player.stats.leetcookies++;
 
-				self.player.cookies += (cookies*self.getBonusEffects());
-				console.log("1.1");
-				console.log("1.2");
+				var cookies = 1337;
+
+				// Look for bonus effects on your user
+				if (!('cookies' in self.player.stats)) self.player.stats.cookies = 0;
+
+				self.player.stats.cookies += (cookies*self.getBonusEffects());
 				self.game.markModified('players');
-				console.log("1.1");
 				self.game.save(function() {
-					console.log("leet finished");
-					console.log(msg, item);
 					var msg = item.eatmessage.replace('%username%', self.player.username).replace('%cookies%', cookies);
 					callback(msg);
 				});
@@ -97,6 +102,10 @@ function Room(chatid, player, cb){
 			self.game.markModified('items');
 
 			self.game.save(function(){
+				// Update stats
+				if (!('ninjacookies' in self.player.stats)) self.player.stats.ninjacookies = 0;
+				self.player.stats.ninjacookies++;
+
 				for(var i = 0; i < rand; i++) {
 					self.player.items.push({
 						command: 'throwcookie'
@@ -111,7 +120,7 @@ function Room(chatid, player, cb){
 			});
 		},
 		throwcookie: function(itemId, msg, object, callback){
-			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg[0]+", but failed");
+			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg+", but failed");
 		}
 	};
 	/** Define methods **/
