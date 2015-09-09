@@ -362,6 +362,7 @@ function Room(chatid, player, cb){
 				}
 			}, function(err, doc){
 				if(err || !doc){
+					console.log("Room creation failed");
 					throw new Error("New game error: "+err);
 				} else {
 					console.log("Room found");
