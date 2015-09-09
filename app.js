@@ -75,7 +75,7 @@ var getupdatesCallback = function(err, res){
 						words.splice(0,1);
 						words = words.join(' ');
 						console.log("command: %s, %s", command, words);
-						// game.setting('started', false) && 
+						// game.setting('started', false) &&
 						if(!game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
 							bot.request("msg", {
@@ -91,7 +91,7 @@ var getupdatesCallback = function(err, res){
 							}
 							if(commands[command]){
 								console.log("Info: Triggering command [%s]", command);
-								commands[command](words, res.result[0].message, function(msg){
+								commands[command](game, words, res.result[0].message, function(msg){
 									console.log("Bot: %s", msg);
 									bot.request("msg", {
 										chat_id: res.result[0].message.chat.id,
@@ -194,7 +194,7 @@ function getObject(starter, str, obj){
 
 
 var commands = {
-	start: function(msg, object, callback){
+	start: function(game, msg, object, callback){
 		// Start a game again or create a new one for this chat
 		var startedmessages = [
 			"The game has been on like forever. That means you should probably lay off some cookies soon. Just a tip.",
@@ -211,21 +211,18 @@ var commands = {
 
 		var rand = Math.floor(Math.random()*startedmessages.length);
 
-		var chat = object.chat.id;
-		new Room(chat, object.from, function(game){
-			game.startGame(function(changed){
-				if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
-				else callback(startedmessages[rand]);
+		game.startGame(function(changed){
+			if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
+			else callback(startedmessages[rand]);
 
-				if (rand in additionalcallback) {
-					setTimeout(function() {
-						callback(additionalcallback[rand].message);
-					}, additionalcallback[rand].timeout);
-				}
-			});
+			if (rand in additionalcallback) {
+				setTimeout(function() {
+					callback(additionalcallback[rand].message);
+				}, additionalcallback[rand].timeout);
+			}
 		});
 	},
-	stop: function(msg, object, callback){
+	stop: function(game, msg, object, callback){
 		var stoppedmessages = [
 			"The game is already put on hold. You haven't eaten cookies for aaages :''(",
 			"It was never on... You feel skinny yet?",
