@@ -232,11 +232,11 @@ var commands = {
 
 		var additionalcallback = {
 			2: {
-				timeout: 2000,
+				timeout: 2500,
 				message: "Fooled yah, I didn't start the game again. *sobs*"
 			},
 			3: {
-				timeout: 500,
+				timeout: 1000,
 				message: "But you should really consider starting the game again <3"
 			}
 		};
