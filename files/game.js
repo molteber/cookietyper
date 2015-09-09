@@ -279,7 +279,7 @@ function Room(chatid, player, cb){
 		}
 		// Sort the player array based on cookies
 		self.game.players.sort(function(a, b) {
-			return a.stats.cookies - b.stats.cookies;
+			return b.stats.cookies - a.stats.cookies;
 		});
 
 		for(var i = 0; i < self.game.players.length; i++){
