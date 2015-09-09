@@ -268,14 +268,18 @@ var commands = {
 		if(items.length > 0){
 			var diff = {};
 			for(var i = 0; i < items.length; i++){
-				if(diff[items[i].command]){
-					diff[items[i].command].total++;
-				} else {
+				if(!diff[items[i].command]){
 					diff[items[i].command] = {
-						total : 1,
+						total : 0,
 						name: items[i].name,
 					}
 				}
+				for(var j = 0; j < game.game.items.length; i++) {
+					if (game.game.items[j].item._id == items[i]._id) {
+						diff[items[i].command].total++;
+					}
+				}
+
 			}
 			var split ="\n---------------";
 			var melding = "These cookies is just waiting to get eaten!"+split;
