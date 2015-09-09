@@ -69,7 +69,7 @@ function Room(chatid, player, cb){
 		l33t: function(itemId, msg, object, callback){
 			var gameitem = self.game.items[itemId];
 			var item = self.getItem(gameitem.item);
-			console.log("1.0", item);
+			// console.log("1.0", item);
 
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
@@ -131,14 +131,14 @@ function Room(chatid, player, cb){
 	};
 	/** Define methods **/
 	self.findPlayer = function(cb){
-		console.log("Looking for player "+self._tempplayer);
+		// console.log("Looking for player "+self._tempplayer);
 		if(!('username' in self._tempplayer) || self._tempplayer.username == "undefined" || self._tempplayer.username.length < 1) {
-			console.log("[Player] Invalid player object", self._tempplayer);
+			// console.log("[Player] Invalid player object", self._tempplayer);
 			return cb();
 		}
 
 		if(self.game == null) return cb();
-		console.log("[Player] Game found");
+		// console.log("[Player] Game found");
 
 		// Find the current player
 		for(var i = 0; i < self.game.players.length; i++){
@@ -148,7 +148,7 @@ function Room(chatid, player, cb){
 			}
 		}
 		if(self.player == null){
-			console.log("[Creating player]");
+			// console.log("[Creating player]");
 			// Player do not exists. Insert player into array
 			self.player = {
 				id: self._tempplayer.id,
@@ -162,12 +162,12 @@ function Room(chatid, player, cb){
 			self.game.players.push(self.player);
 			self.game.markModified('players');
 			self.game.save(function(err, doc){
-				console.log("[Player] Err? %s, or not", err, doc);
+				// console.log("[Player] Err? %s, or not", err, doc);
 				cb();
 			});
 		}
 		else {
-			console.log("[Player] Player found", self.player);
+			// console.log("[Player] Player found", self.player);
 			cb();
 		}
 	};
@@ -205,7 +205,7 @@ function Room(chatid, player, cb){
 
 			return true;
 		} else if (item >= 0 && item !== null && self.commands[command] && self.commands[command] instanceof Function) {
-			console.log("command found", command)
+			// console.log("command found", command)
 			self.commands[command](item, msg, object, callback);
 
 			return true;
@@ -215,7 +215,7 @@ function Room(chatid, player, cb){
 
 	self.hasItem = function(command){
 		for (var i = 0; i < self.items.length; i++) {
-			console.log(self.items[i].command, command);
+			// console.log(self.items[i].command, command);
 			if (self.items[i].command === command) {
 				return i;
 			}
@@ -251,10 +251,10 @@ function Room(chatid, player, cb){
 
 		if(self.setting('started', false) == true) cb(false);
 		else {
-			console.log("Setting value");
+			// console.log("Setting value");
 			self.setSetting('started', true);
 			self.game.save(function(err, doc){
-				console.log("[Start] Err? %s, or not", doc);
+				// console.log("[Start] Err? %s, or not", doc);
 				cb(true);
 			});
 		}
@@ -344,12 +344,12 @@ function Room(chatid, player, cb){
 	};
 
 	// Look for gameroom
-	console.log("Looking for room");
+	// console.log("Looking for room");
 	collection.Room.findOne({chat_id: chatid}, function(err, doc) {
 		if (err) {
 			throw new Error("Gameroom error: "+err);
 		} else if (doc) {
-			console.log("Game found");
+			// console.log("Game found");
 			self.game = doc;
 			self.settings = self.game.settings;
 			self.loadItems(function(){
@@ -358,7 +358,7 @@ function Room(chatid, player, cb){
 				});
 			});
 		} else {
-			console.log("Creating room");
+			// console.log("Creating room");
 			collection.Room.create({
 				chat_id: chatid,
 				players: [],
@@ -372,7 +372,7 @@ function Room(chatid, player, cb){
 					console.log("Room creation failed", err, doc);
 					throw new Error("New game error: "+err);
 				} else {
-					console.log("Room found");
+					// console.log("Room found");
 					self.game = doc;
 					self.settings = self.game.settings;
 					self.loadItems(function(){

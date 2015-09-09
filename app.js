@@ -74,7 +74,7 @@ var getupdatesCallback = function(err, res){
 						var command = words[0].split("@"+bot.getName())[0].substr(1);
 						words.splice(0,1);
 						words = words.join(' ');
-						console.log("command: %s, %s", command, words);
+						// console.log("command: %s, %s", command, words);
 						// game.setting('started', false) &&
 						if(!game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
@@ -83,7 +83,7 @@ var getupdatesCallback = function(err, res){
 								text: msg
 							});
 						})){
-							console.log("checking to see if the app have that command", typeof commands, command);
+							// console.log("checking to see if the app have that command", typeof commands, command);
 							if(!commands[command]){
 								if(aliases[command] && commands[aliases[command]]){
 									command = aliases[command];
@@ -126,7 +126,7 @@ var getupdatesCallback = function(err, res){
 
 								// Check if we should add a item to the game
 								gameitems.get(function(doc){
-									console.log(doc, "COOKIE DROPPED")
+									// console.log(doc, "COOKIE DROPPED")
 									if(doc){
 										var item = {
 											item: doc._id,
@@ -137,7 +137,7 @@ var getupdatesCallback = function(err, res){
 											date.setSeconds(date.getSeconds()+doc.expires);
 											item.expires = Math.floor(date.getTime()/1000);
 										}
-										console.log("new item: ", item);
+										// console.log("new item: ", item);
 
 										game.game.items.push(item);
 										game.game.markModified('items');
@@ -211,9 +211,9 @@ var commands = {
 		};
 
 		var rand = Math.floor(Math.random()*startedmessages.length);
-		console.log("Starting", typeof game);
+		// console.log("Starting", typeof game);
 		game.startGame(function(changed){
-			console.log("Started? ", changed);
+			// console.log("Started? ", changed);
 
 			if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
 			else callback(startedmessages[rand]);
