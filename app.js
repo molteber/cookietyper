@@ -276,7 +276,8 @@ var commands = {
 				}
 
 				for(var j = 0; j < game.game.items.length; j++) {
-					if (game.game.items[j].item._id == items[i]._id) {
+					// console.log("item: ", game.game.items[j].item)
+					if (game.game.items[j].item == items[i]._id) {
 						diff[items[i].command].total++;
 					}
 				}
