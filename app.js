@@ -204,8 +204,8 @@ var commands = {
 
 		var additionalcallback = {
 			2: {
-				timeout: 2000,
-				message: "Hah! NOPE! Just kidding! LOL! Only x1 for you"
+				timeout: 7000,
+				message: "Hah! NOPE! Just kidding! LOL! Only x1 cookies for you"
 			}
 		};
 
@@ -215,7 +215,7 @@ var commands = {
 			if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
 			else callback(startedmessages[rand]);
 
-			if (rand in additionalcallback) {
+			if (!changed && rand in additionalcallback) {
 				setTimeout(function() {
 					callback(additionalcallback[rand].message);
 				}, additionalcallback[rand].timeout);
@@ -247,7 +247,7 @@ var commands = {
 			if(changed) callback("The game is put on hold. No cookies for you :'(");
 			else callback(stoppedmessages[rand]);
 
-			if (rand in additionalcallback) {
+			if (!changed && rand in additionalcallback) {
 				setTimeout(function() {
 					callback(additionalcallback[rand].message);
 				}, additionalcallback[rand].timeout);
