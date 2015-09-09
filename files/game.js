@@ -162,7 +162,7 @@ function Room(chatid, player, cb){
 			self.game.players.push(self.player);
 			self.game.markModified('players');
 			self.game.save(function(err, doc){
-				console.log["Player] Err? %s, or not", err, doc);
+				console.log("[Player] Err? %s, or not", err, doc);
 				cb();
 			});
 		}
