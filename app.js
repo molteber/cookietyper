@@ -211,8 +211,10 @@ var commands = {
 		};
 
 		var rand = Math.floor(Math.random()*startedmessages.length);
-
+		console.log("Starting", typeof game);
 		game.startGame(function(changed){
+			console.log("Started? ", changed);
+
 			if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
 			else callback(startedmessages[rand]);
 
