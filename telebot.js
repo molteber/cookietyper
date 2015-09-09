@@ -388,7 +388,7 @@ function Bot(name, token, url){
 						callback(null, result);
 					}
 				} catch (e) {
-					//callback(e);
+					callback(e);
 					console.log("ERR ", e);
 				}
 
