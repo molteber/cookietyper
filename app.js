@@ -262,9 +262,6 @@ var commands = {
 	},
 	cookies: function(game, msg, object, callback){
 		var items = game.items;
-		console.log(game.items);
-		console.log(game.game.items);
-
 		if(items.length > 0){
 			var diff = {};
 			for(var i = 0; i < items.length; i++){
@@ -276,7 +273,6 @@ var commands = {
 				}
 
 				for(var j = 0; j < game.game.items.length; j++) {
-					console.log("item: ", game.game.items[j].item, items[i]._id, game.game.items[j].item.equals(items[i]._id));
 					if (game.game.items[j].item.equals(items[i]._id)) {
 						diff[items[i].command].total++;
 					}

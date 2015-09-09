@@ -317,7 +317,7 @@ function Room(chatid, player, cb){
 	self.getItem = function(id)
 	{
 		for (var i = 0; i < self.items.length; i++) {
-			if((self.items[i]._id+"") == (id+"")) {
+			if((self.items[i]._id.equals(id)) {
 				return self.items[i];
 			}
 		}
