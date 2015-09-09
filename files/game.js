@@ -67,8 +67,8 @@ function Room(chatid, player, cb){
 			var item = self.getItem(gameitem.item);
 			console.log("1.0", item);
 
-			// self.game.items.splice(itemId, 1);
-			// self.game.markModified('items');
+			self.game.items.splice(itemId, 1);
+			self.game.markModified('items');
 			self.game.save(function(){
 
 				var cookies = 1337;
