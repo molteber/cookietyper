@@ -295,10 +295,10 @@ function Room(chatid, player, cb){
 		var expire;
 		for(var i = 0; i < self.game.items.length; i++) {
 			if (self.game.items[i].expires > 0) {
-				expire = selg.game.items[i].expires;
+				expire = self.game.items[i].expires;
 				if (expire < seconds) {
 					self.game.items.splice(i, 1);
-					selg.game.markModified('items');
+					self.game.markModified('items');
 				}
 
 			}
