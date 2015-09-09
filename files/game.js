@@ -131,11 +131,14 @@ function Room(chatid, player, cb){
 	};
 	/** Define methods **/
 	self.findPlayer = function(cb){
+		console.log("Looking for player "+self._tempplayer);
 		if(!('username' in self._tempplayer) || self._tempplayer.username == "undefined" || self._tempplayer.username.length < 1) {
+			console.log("[Player] Invalid player object", self._tempplayer);
 			return cb();
 		}
 
 		if(self.game == null) return cb();
+		console.log("[Player] Game found");
 
 		// Find the current player
 		for(var i = 0; i < self.game.players.length; i++){
@@ -145,9 +148,10 @@ function Room(chatid, player, cb){
 			}
 		}
 		if(self.player == null){
+			console.log("[Creating player]");
 			// Player do not exists. Insert player into array
 			self.player = {
-				id: (""+self._tempplayer.id),
+				id: self._tempplayer.id,
 				username: self._tempplayer.username,
 				stats: {
 					cookies: 0
@@ -157,11 +161,13 @@ function Room(chatid, player, cb){
 			};
 			self.game.players.push(self.player);
 			self.game.markModified('players');
-			self.game.save(function(){
+			self.game.save(function(err, doc){
+				console.log["Player] Err? %s, or not", err, doc);
 				cb();
 			});
 		}
 		else {
+			console.log("[Player] Player found", self.player);
 			cb();
 		}
 	};
@@ -280,7 +286,7 @@ function Room(chatid, player, cb){
 					if (!('cookies' in self.game.players[i].stats)) {
 						self.game.players[i].stats.cookies = 0;
 					}
-					return cb("@"+self.game.players[i].username+" has "+self.game.players[i].stats.cookies+" cookies!");
+					return cb("@"+self.game.players[i].username+" have "+self.game.players[i].stats.cookies+" cookies!");
 				}
 			}
 		}
