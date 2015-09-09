@@ -28,7 +28,7 @@ var gameitems = {
 					if(!doc) err = "Ingen items";
 
 					console.log("ERR!! %s", err);
-					cb();
+					//cb();
 				} else {
 					this.curr = this.max;
 					cb(doc);
@@ -36,7 +36,7 @@ var gameitems = {
 			});
 		} else {
 			if(this.curr > this.min) this.curr--;
-			cb();
+			//cb();
 		}
 
 	},
