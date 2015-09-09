@@ -4,7 +4,7 @@ var RoomSchema = new mongoose.Schema({
 	chat_id : String,
 	players: [
 		{
-			id: {type: String, unique: true, dropDubs: true, required: true},
+			id: {type: String, required: true},
 			username: {type: String, required: true},
 			stats: mongoose.Schema.Types.Mixed,
 			items: [
