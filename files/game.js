@@ -125,7 +125,7 @@ function Room(chatid, player, cb){
 		bluebeast: function(itemId, msg, object, callback){
 			callback("[THIS COOKIE IS NOT READY YET :/]");
 		},
-		'5secondrule' : function(itemId, msg, object, callback) {
+		"5secondrule" : function(itemId, msg, object, callback) {
 			callback("[THIS COOKIE IS NOT READY YET :/]");
 		}
 	};
@@ -337,10 +337,12 @@ function Room(chatid, player, cb){
 	};
 
 	// Look for gameroom
+	console.log("Looking for room");
 	collection.Room.findOne({chat_id: chatid}, function(err, doc) {
 		if (err) {
 			throw new Error("Gameroom error: "+err);
 		} else if (doc) {
+			console.log("Game found");
 			self.game = doc;
 			self.settings = self.game.settings;
 			self.loadItems(function(){
@@ -349,6 +351,7 @@ function Room(chatid, player, cb){
 				});
 			});
 		} else {
+			console.log("Creating room");
 			collection.Room.create({
 				chat_id: chatid,
 				players: [],
@@ -361,6 +364,7 @@ function Room(chatid, player, cb){
 				if(err || !doc){
 					throw new Error("New game error: "+err);
 				} else {
+					console.log("Room found");
 					self.game = doc;
 					self.settings = self.game.settings;
 					self.loadItems(function(){
