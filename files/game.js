@@ -277,6 +277,11 @@ function Room(chatid, player, cb){
 				}
 			}
 		}
+		// Sort the player array based on cookies
+		self.game.players.sort(function(a, b) {
+			return a.stats.cookies - b.stats.cookies;
+		});
+
 		for(var i = 0; i < self.game.players.length; i++){
 			if (!('cookies' in self.game.players[i].stats)) {
 				self.game.players[i].stats.cookies = 0;
@@ -317,7 +322,7 @@ function Room(chatid, player, cb){
 	self.getItem = function(id)
 	{
 		for (var i = 0; i < self.items.length; i++) {
-			if((self.items[i]._id.equals(id)) {
+			if(self.items[i]._id.equals(id)) {
 				return self.items[i];
 			}
 		}
