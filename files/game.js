@@ -299,6 +299,7 @@ function Room(chatid, player, cb){
 				if (expire < seconds) {
 					self.game.items.splice(i, 1);
 					self.game.markModified('items');
+					continue;
 				}
 
 			}
