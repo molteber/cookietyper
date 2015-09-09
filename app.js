@@ -71,10 +71,10 @@ var getupdatesCallback = function(err, res){
 					// Check if the message is a command
 					console.log("has started: %s", game.setting('started', false));
 					if (words[0].indexOf('/') === 0) {
-						console.log("command");
 						var command = words[0].split("@"+bot.getName())[0].substr(1);
 						words.splice(0,1);
 						words = words.join(' ');
+						console.log("command: ", command, words);
 
 						if(game.setting('started', false) && !game.doCommand(command, words, object, function(msg){
 							console.log("Bot: %s", msg);
@@ -83,6 +83,7 @@ var getupdatesCallback = function(err, res){
 								text: msg
 							});
 						})){
+							console.log("checking to see if the app have that command", typeof commands, command);
 							if(!commands[command]){
 								if(aliases[command] && commands[aliases[command]]){
 									command = aliases[command];
@@ -195,73 +196,109 @@ function getObject(starter, str, obj){
 var commands = {
 	start: function(msg, object, callback){
 		// Start a game again or create a new one for this chat
+		var startedmessages = [
+			"The game has been on like forever. That means you should probably lay off some cookies soon. Just a tip.",
+			"It's already on, d'uuuh",
+			"Because you started the game while a game is already running, I'll give you guys x5 cookies from now!"
+		];
+
+		var additionalcallback = {
+			2: {
+				timeout: 2000,
+				message: "Hah! NOPE! Just kidding! LOL! Only x1 for you"
+			}
+		};
+
+		var rand = Math.floor(Math.random()*startedmessages.length);
+
 		var chat = object.chat.id;
 		new Room(chat, object.from, function(game){
 			game.startGame(function(changed){
 				if(changed) callback("The game has begun. COOKIEEEEEEES!!!");
+				else callback(startedmessages[rand]);
+
+				if (rand in additionalcallback) {
+					setTimeout(function() {
+						callback(additionalcallback[rand].message);
+					}, additionalcallback[rand].timeout);
+				}
 			});
 		});
 	},
 	stop: function(msg, object, callback){
-		// Pauses a game
-		var chat = object.chat.id;
-		new Room(chat, object.from, function(game){
-			game.stopGame(function(changed){
-				if(changed) callback("The game is put on hold. No cookies for you :'(");
-			});
+		var stoppedmessages = [
+			"The game is already put on hold. You haven't eaten cookies for aaages :''(",
+			"It was never on... You feel skinny yet?",
+			"The game has begun. COOKIEEEEEEES!!!",
+			"Yeez, relax yo. It's stopped!"
+		];
+
+		var additionalcallback = {
+			2: {
+				timeout: 2000,
+				message: "Fooled yah, I didn't start the game again. *sobs*"
+			},
+			3: {
+				timeout: 500,
+				message: "But you should really consider starting the game again <3"
+			}
+		};
+
+		var rand = Math.floor(Math.random()*stoppedmessages.length);
+
+		game.stopGame(function(changed){
+			if(changed) callback("The game is put on hold. No cookies for you :'(");
+			else callback(stoppedmessages[rand]);
+
+			if (rand in additionalcallback) {
+				setTimeout(function() {
+					callback(additionalcallback[rand].message);
+				}, additionalcallback[rand].timeout);
+			}
 		});
 	},
-	score: function(msg, object, callback){
-		var chat = object.chat.id;
-		new Room(chat, object.from, function(game){
-			game.getScore(msg, function(msg){
-				callback(msg);
-			});
+	score: function(game, msg, object, callback){
+		game.getScore(msg, function(msg) {
+			callback(msg);
 		})
 	},
-	cookies: function(msg, object, callback){
-		var chat = object.chat.id;
-		new Room(chat, object.from, function(game){
-			var items = game.items;
-			console.log(game.items);
-			console.log(game.game.items);
+	cookies: function(game, msg, object, callback){
+		var items = game.items;
+		console.log(game.items);
+		console.log(game.game.items);
 
-			if(items.length > 0){
-				var diff = {};
-				for(var i = 0; i < items.length; i++){
-					if(diff[items[i].command]){
-						diff[items[i].command].total++;
-					} else {
-						diff[items[i].command] = {
-							total : 1,
-							name: items[i].name,
-						}
+		if(items.length > 0){
+			var diff = {};
+			for(var i = 0; i < items.length; i++){
+				if(diff[items[i].command]){
+					diff[items[i].command].total++;
+				} else {
+					diff[items[i].command] = {
+						total : 1,
+						name: items[i].name,
 					}
 				}
-				var split ="\n---------------";
-				var melding = "These cookies is just waiting to get eaten!"+split;
+			}
+			var split ="\n---------------";
+			var melding = "These cookies is just waiting to get eaten!"+split;
 
-				for(a in diff){
-					melding += "\n"+diff[a].name;
-					if(diff[a].total > 1) melding += " (x"+diff[a].total+")";
-					melding += " - "+a;
-				}
-				melding += split+"\nWrite the command which is written in the end to eat the cookie";
-				callback(melding);
-			} else {
-				callback("What? No cookies?? Cookie monster sad :'(");
+			for(a in diff){
+				melding += "\n"+diff[a].name;
+				if(diff[a].total > 1) melding += " (x"+diff[a].total+")";
+				melding += " - "+a;
 			}
-		})
+			melding += split+"\nWrite the command which is written in the end to eat the cookie";
+			callback(melding);
+		} else {
+			callback("What? No cookies?? Cookie monster sad :'(");
+		}
 	},
-	status: function(msg, object, callback){
-		var chat = object.chat.id;
-		new Room(chat, object.from, function(game){
-			if(game.setting('started', false) == false){
-				callback("The game is on hold. Run the command /start to compete for all the cookies in the world!");
-			} else {
-				callback("The game is up and running. Type and eat all the cookies you can!! Do you need a break? Type /stop or /pause");
-			}
-		});
+	status: function(game, msg, object, callback){
+		if(game.setting('started', false) == false){
+			callback("The game is on hold. Run the command /start to compete for all the cookies in the world!");
+		} else {
+			callback("The game is up and running. Type and eat all the cookies you can!! Do you need a break? Type /stop or /pause");
+		}
 	}
 };
 var aliases = {
