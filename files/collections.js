@@ -22,7 +22,7 @@ var RoomSchema = new mongoose.Schema({
 	],
 	items: [{
 		item: mongoose.Schema.Types.ObjectId,
-		expire: Date
+		expires: Date
 	}],
 	settings: mongoose.Schema.Types.Mixed,
 	effects: [{
