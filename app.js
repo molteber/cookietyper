@@ -14,7 +14,7 @@ var options = {
 };
 
 var gameitems = {
-	max: 500,
+	max: 250,
 	min: 10,
 	curr: null,
 	get: function(cb){
