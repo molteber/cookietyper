@@ -276,7 +276,7 @@ function Room(chatid, player, cb){
 	self.getScore = function(username, cb){
 		var cookies = 0;
 		var split ="\n---------------";
-		var melding = "Highscore:"+split;
+		var melding = "Scoreboard:"+split;
 
 		if(username){
 			if(username.indexOf('@') >= 0){
