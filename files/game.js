@@ -100,6 +100,17 @@ function Room(chatid, player, cb){
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
 
+			self.game.save(function() {
+				callback("Hmm, I guess it was nothing");
+			});
+			return;
+			/*
+			var gameitem = self.game.items[itemId];
+			var item = self.getItem(gameitem.item);
+
+			self.game.items.splice(itemId, 1);
+			self.game.markModified('items');
+
 			var rand = Math.floor(Math.random()*3)+1;
 
 			self.game.save(function(){
@@ -118,7 +129,7 @@ function Room(chatid, player, cb){
 					var msg = item.eatmessage.replace('%username%', self.player.username).replace('%amount%', items);
 					callback(msg);
 				});
-			});
+			});*/
 		},
 		throwcookie: function(itemId, msg, object, callback){
 			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg+", but failed\n[THIS COOKIE IS NOT READY YET :/]");
@@ -137,12 +148,14 @@ function Room(chatid, player, cb){
 
 				if (!('cookies' in player.stats)) player.stats.cookies = 0;
 
-				player.stats.cookies -= 100;
+				var cookies = 100*self.getBonusEffects();
+				player.stats.cookies -= cookies;
 				var msg;
 				if (player.stats.cookies < 0) {
+					player.stats.cookies = 0;
 					msg = "%username% lost all the majestic cookies!";
 				} else {
-					msg = "%username% lost 100 majestic cookies :'(";
+					msg = "%username% lost %cookies% majestic cookies :'(";
 				}
 				self.game.markModified('players');
 				callback("Wait.. WHAT?? The strange looking item starts to spin? :o");
@@ -153,7 +166,7 @@ function Room(chatid, player, cb){
 
 						self.game.save(function() {
 							msg = "HAHAHA, it hit %username%. "+msg;
-							msg = msg.replace(/%username%/g, player.username);
+							msg = msg.replace(/%username%/g, player.username).replace(/%cookies%/g, cookies);
 							callback(msg);
 						});
 					}, 2000*randomwaiting);
