@@ -287,7 +287,7 @@ function Room(chatid, player, cb){
 					if (!('cookies' in self.game.players[i].stats)) {
 						self.game.players[i].stats.cookies = 0;
 					}
-					return cb("@"+self.game.players[i].username+" have "+self.game.players[i].stats.cookies+" cookies!");
+					return cb(self.game.players[i].username+" have "+self.game.players[i].stats.cookies+" cookies!");
 				}
 			}
 		}
