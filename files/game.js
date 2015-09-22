@@ -152,13 +152,13 @@ function Room(chatid, player, cb){
 
 						self.game.save(function() {
 							msg = "HAHAHA, it hit %username%. "+msg;
-							msg = msg.replace("%username%", player.username);
+							msg = msg.replace(/%username%/g, player.username);
 							callback(msg);
 						});
 					});
 				}, 2000);
 			});
-			callback("[THIS COOKIE IS NOT READY YET :/]");
+			// callback("[THIS COOKIE IS NOT READY YET :/]");
 		},
 		"5secondrule" : function(itemId, msg, object, callback) {
 			var item = self.items[itemId];
