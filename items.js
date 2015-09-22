@@ -7,7 +7,7 @@ var items = [
 		chance: 100,
 		dropmessage: 'A very special cookie fell down from heaven. (%command%)',
 		eatmessage: '',
-		expires: 0
+		expires: (60*10)
 	},
 	{
 		name: "1337 cookie",
@@ -15,7 +15,7 @@ var items = [
 		chance: 90,
 		dropmessage: 'Shh! My LEET my senses are tingling. Quick, eat this cookie! (%command%)',
 		eatmessage: 'Mmmmmmm, enjoy your %cookies% new cookies, %username%',
-		expires: 0
+		expires: (60*5)
 	},
 	{
 		name: "Ninja",
@@ -23,7 +23,7 @@ var items = [
 		chance: 50,
 		dropmessage: 'What was that??',
 		eatmessage: "%username% received %amount% cookiestars from a hidden ninja\nThrow it at someone by using the command 'throwcookie <username>'\n[This item stacks]",
-		expires: (60*5)
+		expires: (60*2.5)
 	},
 	{
 		name: "Dirty cookie",
@@ -39,7 +39,7 @@ var items = [
 		chance: 20,
 		dropmessage: 'What is that blue shiny thing behind your ear? (%command%)',
 		eatmessage: "%username% found a blue shell-ish item. Hmm.. It appears to slide quite fast on any surface. (slidethebeast)",
-		expires: 0
+		expires: (60*30)
 	}
 ];
 

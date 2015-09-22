@@ -14,7 +14,8 @@ function Room(chatid, player, cb){
 	/** Define commands **/
 	self.commands = {
 		goldencookie: function(itemId, msg, object, callback){
-			var item = self.items[itemId];
+			var gameitem = self.game.items[itemId];
+			var item = self.getItem(gameitem.item);
 
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
@@ -69,7 +70,6 @@ function Room(chatid, player, cb){
 		l33t: function(itemId, msg, object, callback){
 			var gameitem = self.game.items[itemId];
 			var item = self.getItem(gameitem.item);
-			// console.log("1.0", item);
 
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
@@ -94,12 +94,13 @@ function Room(chatid, player, cb){
 			});
 		},
 		ninja: function(itemId, msg, object, callback) {
-			var item = self.items[itemId];
-
-			var rand = Math.floor(Math.random()*3)+1;
+			var gameitem = self.game.items[itemId];
+			var item = self.getItem(gameitem.item);
 
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
+
+			var rand = Math.floor(Math.random()*3)+1;
 
 			self.game.save(function(){
 				// Update stats
@@ -123,9 +124,44 @@ function Room(chatid, player, cb){
 			callback("@"+self.player.username +" tried to throw a cookiestar at "+msg+", but failed\n[THIS COOKIE IS NOT READY YET :/]");
 		},
 		bluebeast: function(itemId, msg, object, callback){
+			var gameitem = self.game.items[itemId];
+			var item = self.getItem(gameitem.item);
+
+			self.game.items.splice(itemId, 1);
+			self.game.markModified('items');
+
+			self.game.save(function() {
+				var players = self.getSortedScore();
+				var player = players[0];
+
+				if (!('cookies' in player.stats)) player.stats.cookies = 0;
+
+				player.stats.cookies -= 100;
+				var msg;
+				if (player.stats.cookies < 0) {
+					msg = "%username% lost all the majestic cookies!";
+				} else {
+					msg = "%username% lost 100 majestic cookies :'(";
+				}
+				self.game.markModified('players');
+				callback("Wait.. WHAT?? The strange looking item starts to spin? :o");
+				setTimeout(function() {
+					callback("Oh holy macaroni! There it slides away!");
+
+					setTimeout(function(){
+
+						self.game.save(function() {
+							msg = "HAHAHA, it hit %username%. "+msg;
+							msg = msg.replace("%username%", player.username);
+							callback(msg);
+						});
+					});
+				}, 2000);
+			});
 			callback("[THIS COOKIE IS NOT READY YET :/]");
 		},
 		"5secondrule" : function(itemId, msg, object, callback) {
+			var item = self.items[itemId];
 			callback("[THIS COOKIE IS NOT READY YET :/]");
 		}
 	};
@@ -217,7 +253,12 @@ function Room(chatid, player, cb){
 		for (var i = 0; i < self.items.length; i++) {
 			// console.log(self.items[i].command, command);
 			if (self.items[i].command === command) {
-				return i;
+				for (var j = 0; j < self.game.items.length; j++) {
+					if (self.items[i]._id.equals(self.game.items[j].item)) {
+						return j;
+					}
+				}
+				return null;
 			}
 		}
 		return null;
@@ -273,6 +314,13 @@ function Room(chatid, player, cb){
 		}
 	}
 
+	self.getSortedScore = function() {
+		self.game.players.sort(function(a, b) {
+			return b.stats.cookies - a.stats.cookies;
+		});
+
+		return self.game.players;
+	}
 	self.getScore = function(username, cb){
 		var cookies = 0;
 		var split ="\n---------------";
@@ -292,16 +340,14 @@ function Room(chatid, player, cb){
 			}
 		}
 		// Sort the player array based on cookies
-		self.game.players.sort(function(a, b) {
-			return b.stats.cookies - a.stats.cookies;
-		});
+		var players = self.getSortedScore();
 
-		for(var i = 0; i < self.game.players.length; i++){
-			if (!('cookies' in self.game.players[i].stats)) {
-				self.game.players[i].stats.cookies = 0;
+		for(var i = 0; i < players.length; i++){
+			if (!('cookies' in players[i].stats)) {
+				players[i].stats.cookies = 0;
 			}
-			melding += "\n"+self.game.players[i].username+" has "+self.game.players[i].stats.cookies;
-			cookies += 	self.game.players[i].stats.cookies;
+			melding += "\n"+players[i].username+" has "+players[i].stats.cookies;
+			cookies += 	players[i].stats.cookies;
 		}
 		melding += split+"\nYou have a total group score of "+cookies+" cookies!";
 		return cb(melding);
