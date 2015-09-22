@@ -129,6 +129,7 @@ function Room(chatid, player, cb){
 
 			self.game.items.splice(itemId, 1);
 			self.game.markModified('items');
+			var randomwaiting = Math.floor(Math.random()*3)+1;
 
 			self.game.save(function() {
 				var players = self.getSortedScore();
@@ -155,7 +156,7 @@ function Room(chatid, player, cb){
 							msg = msg.replace(/%username%/g, player.username);
 							callback(msg);
 						});
-					});
+					}, 2000*randomwaiting);
 				}, 2000);
 			});
 			// callback("[THIS COOKIE IS NOT READY YET :/]");
